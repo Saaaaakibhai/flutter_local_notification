@@ -1,16 +1,87 @@
-# local_push_notification
+# 🔔 Local Push Notification (Flutter)
 
-push notification from the device.
+Push notifications from the device using Flutter. This setup allows sending local notifications on both Android and iOS platforms.
 
-## Getting Started
+---
 
-This project is a starting point for a Flutter application.
+## 📦 Dependencies
 
-A few resources to get you started if this is your first Flutter project:
+Add the following to your `pubspec.yaml`:
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+```yaml
+dependencies:
+  flutter_local_notifications: ^19.4.0
+  permission_handler: ^11.0.1
+```
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+---
+
+## 🍏 iOS Configuration
+
+Edit `ios/Runner/AppDelegate.swift`:
+
+```swift
+import UIKit
+import Flutter
+import flutter_local_notifications
+
+@UIApplicationMain
+@objc class AppDelegate: FlutterAppDelegate {
+  override func application(
+    _ application: UIApplication,
+    didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
+  ) -> Bool {
+    GeneratedPluginRegistrant.register(with: self)
+
+    FlutterLocalNotificationsPlugin.setPluginRegistrantCallback { registry in
+      GeneratedPluginRegistrant.register(with: registry)
+    }
+
+    if #available(iOS 10.0, *) {
+      UNUserNotificationCenter.current().delegate = self as? UNUserNotificationCenterDelegate
+    }
+
+    return super.application(application, didFinishLaunchingWithOptions: launchOptions)
+  }
+}
+```
+
+---
+
+## 🤖 Android Configuration
+
+### Step 1: Enable Java 11 and Desugaring
+
+In `android/app/build.gradle.kts`, inside `android {}`:
+
+```kotlin
+compileOptions {
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
+    isCoreLibraryDesugaringEnabled = true // ✅ Enable desugaring
+}
+```
+
+### Step 2: Add Desugaring Dependency
+
+Inside `dependencies {}`:
+
+```kotlin
+coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4")
+```
+
+---
+
+## 🔐 Android Permissions
+
+In `android/app/src/main/AndroidManifest.xml`, add:
+
+```xml
+<uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+```
+
+---
+
+## 📄 License
+
+MIT License. You are free to use and modify.
